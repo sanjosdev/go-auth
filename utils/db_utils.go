@@ -24,3 +24,56 @@ func (u DBUtils) Connect() *sql.DB {
 	}
 	return db
 }
+
+func (u DBUtils) Read(db *sql.DB, query string, arguments ...interface{}) (*sql.Rows, error) {
+	fmt.Println("== Reading Data From Database ==")
+	result, err := db.Query(query, arguments...)
+	if err != nil {
+		log.Fatal(err)
+		return nil, err
+	}
+	return result, nil
+}
+
+func (u DBUtils) Insert(db *sql.DB, query string, arguments ...interface{}) (sql.Result, error) {
+	fmt.Println("== Insert Data From Database ==")
+	insert, err := db.Prepare(query)
+	if err != nil {
+		log.Fatal(err)
+		return nil, err
+	}
+	result, err := insert.Exec(arguments...)
+	if err != nil {
+		log.Fatal(err)
+		return nil, err
+	}
+	return result, nil
+}
+
+func (u DBUtils) Update(db *sql.DB, query string, arguments ...interface{}) (sql.Result, error) {
+	fmt.Println("== Update Data From Database ==")
+	update, err := db.Prepare(query)
+	if err != nil {
+		log.Fatal(err)
+		return nil, err
+	}
+	result, err := update.Exec(arguments...)
+	if err != nil {
+		return nil, err
+	}
+	return result, nil
+}
+
+func (u DBUtils) Delete(db *sql.DB, query string, arguments ...interface{}) (sql.Result, error) {
+	fmt.Println("== Delete Data From Database ==")
+	update, err := db.Prepare(query)
+	if err != nil {
+		log.Fatal(err)
+		return nil, err
+	}
+	result, err := update.Exec(arguments...)
+	if err != nil {
+		return nil, err
+	}
+	return result, nil
+}

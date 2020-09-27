@@ -7,8 +7,9 @@ import (
 
 func DBRepository() DBInterface {
 
+	// TODO : getting environment value here
 	dbutils := utils.DBUtils{
-		DBName:   "",
+		DBName:   "realcast-auth",
 		Driver:   "mysql",
 		Password: "",
 		Username: "root",
