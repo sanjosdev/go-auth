@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"database/sql"
 	"log"
 	. "sanjos/auth/interfaces"
 	"sanjos/auth/repository"
@@ -10,11 +9,10 @@ import (
 )
 
 var dbInterface DBInterface
-var dbInstance *sql.DB
 
 func InitRepository() {
 	dbInterface = repository.DBRepository()
-	dbInstance = dbInterface.Connect()
+	dbInterface.Connect()
 }
 
 func GetUserData() {
@@ -23,9 +21,9 @@ func GetUserData() {
 
 func InsertUserData() {
 	id := uuid.New()
-	_, err := dbInterface.Insert(dbInstance, "INSERT INTO users VALUES(?, ?, ?, ?, ?)", id, "ilzammulkhaq85@gmail.com", "suku", "ini_url", "jkjk")
+	_, err := dbInterface.Insert("INSERT INTO users VALUES(?, ?, ?, ?, ?)", id, "ilzammulkhaq65@gmail.com", "suku", "ini_url", "jkjk")
 	if err != nil {
-		log.Fatal()
+		log.Fatal(err)
 	}
 }
 

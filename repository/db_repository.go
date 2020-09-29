@@ -15,6 +15,6 @@ func DBRepository() DBInterface {
 		Username: "root",
 	}
 
-	return dbutils
+	return &dbutils
 
 }
