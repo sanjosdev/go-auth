@@ -4,30 +4,36 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
+	"time"
 
 	_ "github.com/go-sql-driver/mysql"
 )
 
 type DBUtils struct {
-	Driver   string
-	Username string
-	Password string
-	DBName   string
+	Driver     string
+	Username   string
+	Password   string
+	DBName     string
+	DBInstance *sql.DB
 }
 
-func (u DBUtils) Connect() *sql.DB {
+func (u *DBUtils) Connect() {
 	fmt.Println("== Connecting To Database ==")
 	dburl := fmt.Sprintf("%s:%s@/%s", u.Username, u.Password, u.DBName)
 	db, err := sql.Open(u.Driver, dburl)
 	if err != nil {
 		log.Fatal(err)
 	}
-	return db
+	db.SetMaxOpenConns(25)
+	db.SetMaxIdleConns(25)
+	db.SetConnMaxLifetime(5 * time.Minute)
+	u.DBInstance = db
+	fmt.Println(u.DBInstance)
 }
 
-func (u DBUtils) Read(db *sql.DB, query string, arguments ...interface{}) (*sql.Rows, error) {
+func (u *DBUtils) Read(query string, arguments ...interface{}) (*sql.Rows, error) {
 	fmt.Println("== Reading Data From Database ==")
-	result, err := db.Query(query, arguments...)
+	result, err := u.DBInstance.Query(query, arguments...)
 	if err != nil {
 		log.Fatal(err)
 		return nil, err
@@ -35,9 +41,9 @@ func (u DBUtils) Read(db *sql.DB, query string, arguments ...interface{}) (*sql.
 	return result, nil
 }
 
-func (u DBUtils) Insert(db *sql.DB, query string, arguments ...interface{}) (sql.Result, error) {
+func (u *DBUtils) Insert(query string, arguments ...interface{}) (sql.Result, error) {
 	fmt.Println("== Insert Data From Database ==")
-	insert, err := db.Prepare(query)
+	insert, err := u.DBInstance.Prepare(query)
 	if err != nil {
 		log.Fatal(err)
 		return nil, err
@@ -50,9 +56,9 @@ func (u DBUtils) Insert(db *sql.DB, query string, arguments ...interface{}) (sql
 	return result, nil
 }
 
-func (u DBUtils) Update(db *sql.DB, query string, arguments ...interface{}) (sql.Result, error) {
+func (u *DBUtils) Update(query string, arguments ...interface{}) (sql.Result, error) {
 	fmt.Println("== Update Data From Database ==")
-	update, err := db.Prepare(query)
+	update, err := u.DBInstance.Prepare(query)
 	if err != nil {
 		log.Fatal(err)
 		return nil, err
@@ -64,9 +70,9 @@ func (u DBUtils) Update(db *sql.DB, query string, arguments ...interface{}) (sql
 	return result, nil
 }
 
-func (u DBUtils) Delete(db *sql.DB, query string, arguments ...interface{}) (sql.Result, error) {
+func (u DBUtils) Delete(query string, arguments ...interface{}) (sql.Result, error) {
 	fmt.Println("== Delete Data From Database ==")
-	update, err := db.Prepare(query)
+	update, err := u.DBInstance.Prepare(query)
 	if err != nil {
 		log.Fatal(err)
 		return nil, err
